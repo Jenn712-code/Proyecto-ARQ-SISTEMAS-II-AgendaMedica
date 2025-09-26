@@ -1,5 +1,6 @@
 package servicios;
 
+import entidades.Especialidad;
 import entidades.Paciente;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.runtime.StartupEvent;
@@ -7,13 +8,14 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.transaction.Transactional;
 import java.util.Date;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class DatosPrueba {
-
+    private static final Logger LOG = Logger.getLogger(String.valueOf(DatosPrueba.class));
     @Transactional
     public void init(@Observes StartupEvent ev) {
-        System.out.println(">>> Cargando datos iniciales...");
+        LOG.info(">>> Cargando datos iniciales...");
 
         if (Paciente.find("pacCorreo", "ana@correo.com").firstResult() == null) {
             Paciente paciente = new Paciente();
@@ -25,7 +27,14 @@ public class DatosPrueba {
             paciente.setPacCorreo("ana@correo.com");
             paciente.setPacContrasena(BcryptUtil.bcryptHash("123456")); // clave encriptada
             paciente.persist();
-            System.out.println(">>> Paciente de prueba insertado");
+            LOG.info(">>> Paciente de prueba insertado");
+        }
+
+        if (Especialidad.find("nombre", "Medicina general").firstResult() == null) {
+            Especialidad especialidad = new Especialidad();
+            especialidad.setNombre("Medicina general");
+            especialidad.persist();
+            LOG.info(">>> Especialidad de prueba insertada");
         }
     }
 }

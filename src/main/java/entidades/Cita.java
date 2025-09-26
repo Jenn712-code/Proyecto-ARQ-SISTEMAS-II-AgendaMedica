@@ -1,12 +1,9 @@
 package entidades;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -15,18 +12,18 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Entity
-@Table(name="Citas")
 
+@Entity
+@Table(name = "citas")
 public class Cita extends PanacheEntityBase {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "citId", length = 10, nullable = false, unique = true)
     private Integer citId;
 
     @Column(name = "citNomMedico", length = 100, nullable = false)
     private String citNomMedico;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "citFecha", nullable = false)
     private LocalDate citFecha;
 
@@ -40,5 +37,13 @@ public class Cita extends PanacheEntityBase {
     private String citEstado;
 
     @Column(name = "citRecordatorio", nullable = false)
-    private boolean citRecordatorio;
+    private Boolean citRecordatorio;
+
+    @ManyToOne
+    @JoinColumn(name = "pacCedula")
+    private Paciente paciente;
+
+    @ManyToOne
+    @JoinColumn(name = "espId")
+    private Especialidad especialidad;
 }

@@ -1,4 +1,4 @@
-package Repositorio;
+package repositorio;
 
 import entidades.Cita;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
