@@ -23,9 +23,29 @@ public class CitaRecursos {
     public Response crearCita(CitaDTO dto) {
         Cita cita = citaServicios.crearCita(dto);
 
-        if (cita == null) {
+        if (dto.citNomMedico == null || dto.citNomMedico.isBlank() || dto.citFecha == null
+                || dto.citHora == null || dto.citDireccion == null || dto.citDireccion.isBlank()
+                || dto.pacCedula == null || dto.espId == null) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Paciente o especialidad no existen")
+                    .entity("Datos incompletos")
+                    .build();
+        }
+
+        if (cita.getCitId() != null && cita.getCitId() == -2) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("El paciente no existe")
+                    .build();
+        }
+
+        if (cita.getCitId() != null && cita.getCitId() == -3) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("La especialidad no existe")
+                    .build();
+        }
+
+        if (cita.getCitId() != null && cita.getCitId() == -1) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity("Ya existe una cita en esa fecha y hora")
                     .build();
         }
         return Response.status(Response.Status.CREATED).entity(cita).build();

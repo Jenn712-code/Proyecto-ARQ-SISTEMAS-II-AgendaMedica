@@ -20,10 +20,26 @@ public class CitaServicios {
     @Transactional
     public Cita crearCita(CitaDTO dto) {
         Paciente paciente = Paciente.findById(dto.pacCedula);
-        if (paciente == null) return null;
+        if (paciente == null) {
+            Cita dummy = new Cita();
+            dummy.setCitId(-2);
+            return dummy;
+        }
 
         Especialidad especialidad = Especialidad.findById(dto.espId);
-        if (especialidad == null) return null;
+        if (especialidad == null) {
+            Cita dummy = new Cita();
+            dummy.setCitId(-3);
+            return dummy;
+        }
+
+        Cita citaExistente = citaRepositorio.find("citFecha = ?1 and citHora = ?2", dto.citFecha, dto.citHora)
+                .firstResult();
+        if (citaExistente != null) {
+            Cita dummy = new Cita();
+            dummy.setCitId(-1);
+            return dummy;
+        }
 
         Cita cita = new Cita();
         cita.setCitNomMedico(dto.citNomMedico);
