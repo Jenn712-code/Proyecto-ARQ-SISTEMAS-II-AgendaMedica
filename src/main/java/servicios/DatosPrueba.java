@@ -2,6 +2,7 @@ package servicios;
 
 import entidades.Especialidad;
 import entidades.Paciente;
+import entidades.TipoServicio;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -36,5 +37,14 @@ public class DatosPrueba {
             especialidad.persist();
             LOG.info(">>> Especialidad de prueba insertada");
         }
+
+            TipoServicio tipoServicio = new TipoServicio();
+            tipoServicio.setTipnombre("Cita");
+            tipoServicio.persist();
+            TipoServicio tipoServicio1 = new TipoServicio();
+            tipoServicio1.setTipnombre("Medicamento");
+            tipoServicio1.persist();
+            LOG.info(">>> TipoServicio de prueba insertada");
+
     }
 }

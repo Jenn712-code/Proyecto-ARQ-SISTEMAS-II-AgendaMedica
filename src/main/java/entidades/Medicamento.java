@@ -4,6 +4,8 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -39,6 +41,14 @@ public class Medicamento extends PanacheEntityBase {
     @ManyToOne
     @JoinColumn(name = "pacCedula")
     private Paciente paciente;
+
+    @OneToOne
+    @JoinColumn(name = "TipId")
+    private TipoServicio tipoServicio;
+
+    @Column(name = "Fecha", nullable = false)
+    private LocalDate Fecha;
+
 }
 
 
