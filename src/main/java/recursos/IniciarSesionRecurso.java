@@ -31,7 +31,7 @@ public class IniciarSesionRecurso {
 
         if (autenticado == null) {
             return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(Map.of("mensaje", "Correo o contraseña incorrectos"))
+                    .entity(Map.of("mensaje", "No se encuentra registrado"))
                     .build();
         }
 
