@@ -4,7 +4,8 @@ import dto.CitaDTO;
 import entidades.Cita;
 import entidades.Especialidad;
 import entidades.Paciente;
-import repositorio.CitaRepositorio;
+import entidades.TipoServicio;
+import repositorios.CitaRepositorio;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -47,9 +48,16 @@ public class CitaServicios {
         cita.setCitHora(dto.citHora);
         cita.setCitDireccion(dto.citDireccion);
         cita.setCitEstado(dto.citEstado);
+        if (dto.citEstado == null || dto.citEstado.isBlank()) {
+            cita.setCitEstado("pendiente");
+        } else {
+            cita.setCitEstado(dto.citEstado);
+        }
         cita.setCitRecordatorio(dto.citRecordatorio);
         cita.setPaciente(paciente);
         cita.setEspecialidad(especialidad);
+        TipoServicio tipo = TipoServicio.find("tipnombre", "Cita").firstResult();
+        cita.setTipoServicio(tipo);
 
         citaRepositorio.persist(cita);
         return cita;

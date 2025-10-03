@@ -40,14 +40,14 @@ public class Cita extends PanacheEntityBase {
     private Boolean citRecordatorio;
 
     @ManyToOne
-    @JoinColumn(name = "pacCedula")
+    @JoinColumn(name = "pacCedula", nullable = false)
     private Paciente paciente;
 
     @ManyToOne
-    @JoinColumn(name = "espId")
+    @JoinColumn(name = "espId", nullable = false)
     private Especialidad especialidad;
 
     @OneToOne
-    @JoinColumn(name = "TipId")
-    private TipoServicio tipo ;
+    @JoinColumn(name = "tipId", nullable = false)
+    private TipoServicio tipoServicio ;
 }

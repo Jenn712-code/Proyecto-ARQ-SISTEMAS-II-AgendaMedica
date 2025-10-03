@@ -3,6 +3,7 @@ package servicios;
 import dto.MedicamentoDTO;
 import entidades.Medicamento;
 import entidades.Paciente;
+import entidades.TipoServicio;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -30,6 +31,8 @@ public class MedicamentoServicio {
         medicamento.setMedDosis(dto.medDosis);
         medicamento.setMedFrecuencia(dto.medFrecuencia);
         medicamento.setMedDuracion(dto.medDuracion);
+        TipoServicio tipo = TipoServicio.find("tipnombre", "Medicamento").firstResult();
+        medicamento.setTipoServicio(tipo);
         if (dto.medEstado == null || dto.medEstado.isBlank()) {
             medicamento.setMedEstado("pendiente");
         } else {

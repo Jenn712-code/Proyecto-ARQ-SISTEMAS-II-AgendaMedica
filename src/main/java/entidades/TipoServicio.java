@@ -16,9 +16,9 @@ import lombok.*;
 public class TipoServicio extends PanacheEntityBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TipId", length = 10, nullable = false, unique = true)
-    private Integer TipId;
+    @Column(name = "tipId", length = 10, nullable = false, unique = true)
+    private Integer tipId;
 
-    @Column(name = "Tipnombre", length = 200, nullable = false)
-    private String Tipnombre;
+    @Column(name = "tipnombre", length = 200, nullable = false)
+    private String tipnombre;
 }
