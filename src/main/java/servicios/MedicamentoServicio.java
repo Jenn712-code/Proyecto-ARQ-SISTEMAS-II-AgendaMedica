@@ -33,6 +33,7 @@ public class MedicamentoServicio {
         medicamento.setMedDuracion(dto.medDuracion);
         TipoServicio tipo = TipoServicio.find("tipnombre", "Medicamento").firstResult();
         medicamento.setTipoServicio(tipo);
+        medicamento.setMedFecha(dto.medFecha);
         if (dto.medEstado == null || dto.medEstado.isBlank()) {
             medicamento.setMedEstado("pendiente");
         } else {

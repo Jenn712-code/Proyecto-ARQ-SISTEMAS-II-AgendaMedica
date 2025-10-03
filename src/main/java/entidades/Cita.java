@@ -47,7 +47,7 @@ public class Cita extends PanacheEntityBase {
     @JoinColumn(name = "espId", nullable = false)
     private Especialidad especialidad;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "tipId", nullable = false)
     private TipoServicio tipoServicio ;
 }

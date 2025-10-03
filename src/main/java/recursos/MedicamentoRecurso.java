@@ -28,8 +28,8 @@ public class MedicamentoRecurso {
             dto.medEstado = "pendiente";
         }
 
-        if(dto.medNombre == null || dto.medDosis == null || dto.medFrecuencia == null
-                || dto.medDuracion == null ||dto.pacCedula == null){
+        if(dto.medNombre == null || dto.medDosis == null || dto.medFrecuencia == null || dto.medFecha == null
+            || dto.medDuracion == null || dto.pacCedula == null){
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Datos incompletos")
                     .build();

@@ -59,7 +59,8 @@ public class DatosPrueba {
             LOG.info(">>> Cita de prueba insertada");
         }
 
-        // Medicamento
+
+       // Medicamento
         if (Medicamento.find("medNombre", "Ibuprofeno").firstResult() == null) {
             Medicamento medicamento = new Medicamento();
             medicamento.setMedNombre("Ibuprofeno");
@@ -78,6 +79,7 @@ public class DatosPrueba {
         }
 
     }
+
 
     private void insertarEspecialidadSiNoExiste(String nombre) {
         long count = Especialidad.count("nombre", nombre);
