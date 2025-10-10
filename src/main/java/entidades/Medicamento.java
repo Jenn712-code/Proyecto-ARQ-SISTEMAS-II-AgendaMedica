@@ -3,6 +3,7 @@ package entidades;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -33,12 +34,22 @@ public class Medicamento extends PanacheEntityBase {
     @Column(name = "medEstado", length = 50, nullable = false)
     private String medEstado;
 
+    @Column(name = "medFecha", nullable = false)
+    private LocalDateTime medFecha;
+
     @Column(name = "medRecordatorio", nullable = false)
     private Boolean medRecordatorio;
 
     @ManyToOne
-    @JoinColumn(name = "pacCedula")
+    @JoinColumn(name = "pacCedula", nullable = false)
     private Paciente paciente;
+
+    @ManyToOne
+    @JoinColumn(name = "tipId", nullable = false)
+    private TipoServicio tipoServicio;
+
+
+
 }
 
 

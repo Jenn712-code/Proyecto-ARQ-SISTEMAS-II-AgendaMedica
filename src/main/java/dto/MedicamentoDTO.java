@@ -1,5 +1,7 @@
 package dto;
 
+import java.time.LocalDateTime;
+
 public class MedicamentoDTO {
     public String medNombre;
     public Integer medFrecuencia;
@@ -8,4 +10,5 @@ public class MedicamentoDTO {
     public String medEstado;
     public Boolean medRecordatorio;
     public Integer pacCedula;
+    public LocalDateTime medFecha;
 }
