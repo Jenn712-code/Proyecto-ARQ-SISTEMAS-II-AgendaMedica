@@ -21,7 +21,6 @@ public class Paciente extends PanacheEntityBase {
     private Integer pacCedula;
     @Column(name = "pacNombre", length = 100, nullable = false)
     private String pacNombre;
-    @Temporal(TemporalType.DATE)
     @Column(name = "pacFecNacimiento", nullable = false)
     private Date pacFecNacimiento;
     @Column(name = "pacEPS", length = 50, nullable = false)

@@ -8,24 +8,27 @@ import jakarta.enterprise.event.Observes;
 import jakarta.transaction.Transactional;
 import java.util.Date;
 
+import static io.quarkus.arc.impl.UncaughtExceptions.LOGGER;
+
 @ApplicationScoped
+@SuppressWarnings("java:S3252")
 public class DatosPrueba {
 
     @Transactional
     public void init(@Observes StartupEvent ev) {
-        System.out.println(">>> Cargando datos iniciales...");
+        LOGGER.info(">>> Cargando datos iniciales...");
 
-        if (Paciente.find("pacCorreo", "ana@correo.com").firstResult() == null) {
+        if (Paciente.find("pacCorreo", "jlopezv6@ucentral.edu.co").firstResult() == null) {
             Paciente paciente = new Paciente();
-            paciente.setPacCedula(1001);
-            paciente.setPacNombre("Ana Pérez");
+            paciente.setPacCedula(1002);
+            paciente.setPacNombre("Jennifer López");
             paciente.setPacFecNacimiento(new Date());
-            paciente.setPacEPS("Sura");
+            paciente.setPacEPS("Compensar");
             paciente.setPacCelular(3001234567L);
-            paciente.setPacCorreo("ana@correo.com");
+            paciente.setPacCorreo("jlopezv6@ucentral.edu.co");
             paciente.setPacContrasena(BcryptUtil.bcryptHash("123456")); // clave encriptada
             paciente.persist();
-            System.out.println(">>> Paciente de prueba insertado");
+            LOGGER.info(">>> Paciente de prueba insertado");
         }
     }
 }
