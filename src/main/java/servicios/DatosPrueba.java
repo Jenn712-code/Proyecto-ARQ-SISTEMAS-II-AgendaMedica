@@ -13,26 +13,45 @@ import java.time.LocalTime;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import static io.quarkus.arc.impl.UncaughtExceptions.LOGGER;
+
 @ApplicationScoped
+@SuppressWarnings("java:S3252")
 public class DatosPrueba {
     private static final Logger LOG = Logger.getLogger(String.valueOf(DatosPrueba.class));
     @Transactional
     public void init(@Observes StartupEvent ev) {
-        LOG.info(">>> Cargando datos iniciales...");
+        LOGGER.info(">>> Cargando datos iniciales...");
 
-        Paciente paciente = Paciente.find("pacCorreo", "ana@correo.com").firstResult();
-        if (paciente == null){
-            paciente = new Paciente();
-            paciente.setPacCedula(1001);
-            paciente.setPacNombre("Ana Pérez");
+        if (Paciente.find("pacCorreo", "jlopezv6@ucentral.edu.co").firstResult() == null) {
+            Paciente paciente = new Paciente();
+            paciente.setPacCedula(1002);
+            paciente.setPacNombre("Jennifer López");
             paciente.setPacFecNacimiento(new Date());
-            paciente.setPacEPS("Sura");
+            paciente.setPacEPS("Compensar");
             paciente.setPacCelular(3001234567L);
-            paciente.setPacCorreo("ana@correo.com");
+            paciente.setPacCorreo("jlopezv6@ucentral.edu.co");
             paciente.setPacContrasena(BcryptUtil.bcryptHash("123456")); // clave encriptada
             paciente.persist();
-            LOG.info(">>> Paciente de prueba insertado");
+        
         }
+        LOGGER.info(">>> Paciente de prueba insertado");
+
+        // Verificar si existe Ana Pérez
+        if (Paciente.find("pacCorreo", "ana@correo.com").firstResult() == null) {
+            Paciente paciente1 = new Paciente();
+            paciente1.setPacCedula(1001);
+            paciente1.setPacNombre("Ana Pérez");
+            paciente1.setPacFecNacimiento(new Date());
+            paciente1.setPacEPS("Sura");
+            paciente1.setPacCelular(3007654321L);
+            paciente1.setPacCorreo("ana@correo.com");
+            paciente1.setPacContrasena(BcryptUtil.bcryptHash("123456")); // clave encriptada
+            paciente1.persist();
+        }
+
+        LOGGER.info(">>> Paciente de prueba insertado");
+
         // Especialidades
         insertarEspecialidadSiNoExiste("Medicina general");
 
@@ -59,7 +78,6 @@ public class DatosPrueba {
             LOG.info(">>> Cita de prueba insertada");
         }
 
-
        // Medicamento
         if (Medicamento.find("medNombre", "Ibuprofeno").firstResult() == null) {
             Medicamento medicamento = new Medicamento();
@@ -77,9 +95,7 @@ public class DatosPrueba {
             medicamento.persist();
             LOG.info(">>> Medicamento de prueba insertado");
         }
-
     }
-
 
     private void insertarEspecialidadSiNoExiste(String nombre) {
         long count = Especialidad.count("nombre", nombre);
@@ -100,4 +116,6 @@ public class DatosPrueba {
             LOG.info(">>> TipoServicio '" + nombre + "' insertado");
         }
     }
+
+    LOGGER.info(">>> Datos iniciales cargados correctamente.");
 }

@@ -5,6 +5,7 @@ import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
+@SuppressWarnings("java:S3252")
 public class IniciarSesionServicio {
 
     public Paciente autenticacion(String correo, String contrasena){
