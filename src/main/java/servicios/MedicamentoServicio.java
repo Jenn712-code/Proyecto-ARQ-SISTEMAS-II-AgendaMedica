@@ -4,16 +4,17 @@ import dto.MedicamentoDTO;
 import entidades.Medicamento;
 import entidades.Paciente;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import repositorios.MedicamentoRepositorio;
 
 import java.util.List;
 
 @ApplicationScoped
+@SuppressWarnings("java:S3252")
+@AllArgsConstructor
 public class MedicamentoServicio {
-    
-    @Inject
+
     MedicamentoRepositorio medicamentoRepositorio;
 
     @Transactional
