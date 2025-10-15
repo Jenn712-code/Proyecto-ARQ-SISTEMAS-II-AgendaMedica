@@ -23,8 +23,9 @@ public class DatosPrueba {
     public void init(@Observes StartupEvent ev) {
         LOGGER.info(">>> Cargando datos iniciales...");
 
-        if (Paciente.find("pacCorreo", "jlopezv6@ucentral.edu.co").firstResult() == null) {
-            Paciente paciente = new Paciente();
+        Paciente paciente = Paciente.find("pacCorreo", "jlopezv6@ucentral.edu.co").firstResult();
+        if (paciente == null) {
+            paciente = new Paciente();
             paciente.setPacCedula(1002);
             paciente.setPacNombre("Jennifer López");
             paciente.setPacFecNacimiento(new Date());
@@ -33,24 +34,22 @@ public class DatosPrueba {
             paciente.setPacCorreo("jlopezv6@ucentral.edu.co");
             paciente.setPacContrasena(BcryptUtil.bcryptHash("123456")); // clave encriptada
             paciente.persist();
-        
+            LOG.info(">>> Paciente Jennifer López insertado");
         }
-        LOGGER.info(">>> Paciente de prueba insertado");
 
-        // Verificar si existe Ana Pérez
-        if (Paciente.find("pacCorreo", "ana@correo.com").firstResult() == null) {
-            Paciente paciente1 = new Paciente();
+        Paciente paciente1 = Paciente.find("pacCorreo", "ana@correo.com").firstResult();
+        if (paciente1 == null) {
+            paciente1 = new Paciente();
             paciente1.setPacCedula(1001);
             paciente1.setPacNombre("Ana Pérez");
             paciente1.setPacFecNacimiento(new Date());
             paciente1.setPacEPS("Sura");
             paciente1.setPacCelular(3007654321L);
             paciente1.setPacCorreo("ana@correo.com");
-            paciente1.setPacContrasena(BcryptUtil.bcryptHash("123456")); // clave encriptada
+            paciente1.setPacContrasena(BcryptUtil.bcryptHash("123456"));
             paciente1.persist();
+            LOG.info(">>> Paciente Ana Pérez insertado");
         }
-
-        LOGGER.info(">>> Paciente de prueba insertado");
 
         // Especialidades
         insertarEspecialidadSiNoExiste("Medicina general");
@@ -68,7 +67,7 @@ public class DatosPrueba {
             cita.setCitDireccion("Calle 123 #45-67");
             cita.setCitEstado("pendiente");
             cita.setCitRecordatorio(true);
-            cita.setPaciente(paciente);
+            cita.setPaciente(paciente1);
             Especialidad esp = Especialidad.findById(1);
             cita.setEspecialidad(esp);
             TipoServicio tipo = TipoServicio.findById(1);
@@ -88,13 +87,15 @@ public class DatosPrueba {
             medicamento.setMedEstado("pendiente");
             medicamento.setMedRecordatorio(true);
             medicamento.setMedFecha(LocalDateTime.now()); // fecha-hora actual
-            medicamento.setPaciente(paciente);
+            medicamento.setPaciente(paciente1);
             TipoServicio tipo = TipoServicio.findById(2);
             medicamento.setTipoServicio(tipo);
 
             medicamento.persist();
             LOG.info(">>> Medicamento de prueba insertado");
         }
+
+        LOGGER.info(">>> Cargando datos iniciales...");
     }
 
     private void insertarEspecialidadSiNoExiste(String nombre) {
@@ -116,6 +117,4 @@ public class DatosPrueba {
             LOG.info(">>> TipoServicio '" + nombre + "' insertado");
         }
     }
-
-    LOGGER.info(">>> Datos iniciales cargados correctamente.");
 }
