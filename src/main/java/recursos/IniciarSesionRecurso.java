@@ -56,13 +56,15 @@ public class IniciarSesionRecurso {
         String token = TokenUtils.generateToken(
                 autenticado.getPacCorreo(),
                 Set.of("paciente"),
-                autenticado.getPacNombre()
+                autenticado.getPacNombre(),
+                autenticado.getPacCedula()
         );
 
         // Retornar el token junto con algunos datos del usuario
         return Response.ok(Map.of(
                 TOKEN, token,
                 "correo", autenticado.getPacCorreo(),
+                "cedula", autenticado.getPacCedula(),
                 "nombre", autenticado.getPacNombre()
         )).build();
     }

@@ -5,17 +5,17 @@ import entidades.Cita;
 import entidades.Especialidad;
 import entidades.Paciente;
 import entidades.TipoServicio;
+import lombok.AllArgsConstructor;
 import repositorios.CitaRepositorio;
-
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.List;
 
 @ApplicationScoped
+@AllArgsConstructor
+@SuppressWarnings("java:S3252")
 public class CitaServicios {
 
-    @Inject
     CitaRepositorio citaRepositorio;
 
     @Transactional
@@ -49,7 +49,7 @@ public class CitaServicios {
         cita.setCitDireccion(dto.citDireccion);
         cita.setCitEstado(dto.citEstado);
         if (dto.citEstado == null || dto.citEstado.isBlank()) {
-            cita.setCitEstado("pendiente");
+            cita.setCitEstado("Pendiente");
         } else {
             cita.setCitEstado(dto.citEstado);
         }
