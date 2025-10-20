@@ -2,7 +2,11 @@ package recursos;
 
 import dto.CitaDTO;
 import entidades.Cita;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
+import seguridad.TokenUtils;
 import servicios.CitaServicios;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -18,9 +22,19 @@ public class CitaRecursos {
 
     @POST
     @Path("/crearCita")
+    @RolesAllowed({"paciente"})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response crearCita(CitaDTO dto) {
+    public Response crearCita(@Context SecurityContext ctx, CitaDTO dto) {
+
+        //Obtener la info del usuario autenticado desde el token JWT
+        Integer cedula = TokenUtils.obtenerCedulaDesdeToken(ctx);
+        if (cedula == null) {
+            return TokenUtils.respuestaCedulaNoEncontrada();
+        }
+        //Asignar la cédula del paciente autenticado al DTO
+        dto.pacCedula = cedula;
+
         Cita cita = citaServicios.crearCita(dto);
 
         if (dto.citNomMedico == null || dto.citNomMedico.isBlank() || dto.citFecha == null

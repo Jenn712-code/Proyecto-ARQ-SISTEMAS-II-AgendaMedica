@@ -18,6 +18,6 @@ public class Especialidad extends PanacheEntityBase {
     @Column(name = "espId", length = 10, nullable = false, unique = true)
     private Integer espId;
     @Column(name = "espNombre", length = 50, nullable = false)
-    private String nombre;
+    private String espNombre;
 
 }

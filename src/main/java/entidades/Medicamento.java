@@ -34,7 +34,7 @@ public class Medicamento extends PanacheEntityBase {
     @Column(name = "medEstado", length = 50, nullable = false)
     private String medEstado;
 
-    @Column(name = "medFecha", nullable = false)
+    @Column(name = "medFecha")
     private LocalDateTime medFecha;
 
     @Column(name = "medRecordatorio", nullable = false)

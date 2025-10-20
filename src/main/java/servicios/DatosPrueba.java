@@ -65,7 +65,7 @@ public class DatosPrueba {
             cita.setCitFecha(LocalDate.of(2025, 10, 1));   // yyyy-MM-dd
             cita.setCitHora(LocalTime.of(14, 30, 0));      // HH:mm:ss
             cita.setCitDireccion("Calle 123 #45-67");
-            cita.setCitEstado("pendiente");
+            cita.setCitEstado("Pendiente");
             cita.setCitRecordatorio(true);
             cita.setPaciente(paciente1);
             Especialidad esp = Especialidad.findById(1);
@@ -77,14 +77,14 @@ public class DatosPrueba {
             LOG.info(">>> Cita de prueba insertada");
         }
 
-       // Medicamento
+        // Medicamento
         if (Medicamento.find("medNombre", "Ibuprofeno").firstResult() == null) {
             Medicamento medicamento = new Medicamento();
             medicamento.setMedNombre("Ibuprofeno");
             medicamento.setMedDosis("1 pastilla");
             medicamento.setMedFrecuencia(8);
             medicamento.setMedDuracion(5);
-            medicamento.setMedEstado("pendiente");
+            medicamento.setMedEstado("Pendiente");
             medicamento.setMedRecordatorio(true);
             medicamento.setMedFecha(LocalDateTime.now()); // fecha-hora actual
             medicamento.setPaciente(paciente1);
@@ -99,12 +99,12 @@ public class DatosPrueba {
     }
 
     private void insertarEspecialidadSiNoExiste(String nombre) {
-        long count = Especialidad.count("nombre", nombre);
+        long count = Especialidad.count("espNombre", nombre);
         if (count == 0) {
             Especialidad especialidad = new Especialidad();
-            especialidad.setNombre(nombre);
+            especialidad.setEspNombre(nombre);
             especialidad.persist();
-            LOG.info(">>> Especialidad '" + nombre + "' insertada");
+            LOG.info(">>> Especialidad '{}' insertada");
         }
     }
 
@@ -114,7 +114,7 @@ public class DatosPrueba {
             TipoServicio tipoServicio = new TipoServicio();
             tipoServicio.setTipnombre(nombre);
             tipoServicio.persist();
-            LOG.info(">>> TipoServicio '" + nombre + "' insertado");
+            LOG.info(">>> TipoServicio '{}' insertado");
         }
     }
 }

@@ -36,7 +36,7 @@ public class MedicamentoServicio {
         medicamento.setTipoServicio(tipo);
         medicamento.setMedFecha(dto.medFecha);
         if (dto.medEstado == null || dto.medEstado.isBlank()) {
-            medicamento.setMedEstado("pendiente");
+            medicamento.setMedEstado("Pendiente");
         } else {
             medicamento.setMedEstado(dto.medEstado);
         }
