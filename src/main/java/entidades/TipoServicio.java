@@ -12,7 +12,6 @@ import lombok.*;
 
 @Entity
 @Table(name = "TipoServicio")
-
 public class TipoServicio extends PanacheEntityBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
