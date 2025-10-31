@@ -48,8 +48,6 @@ public class Medicamento extends PanacheEntityBase {
     @JoinColumn(name = "tipId", nullable = false)
     private TipoServicio tipoServicio;
 
-
-
 }
 
 

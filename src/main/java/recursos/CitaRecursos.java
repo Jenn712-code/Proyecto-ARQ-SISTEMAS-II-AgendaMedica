@@ -67,9 +67,25 @@ public class CitaRecursos {
 
     @GET
     @Path("/listarCitas/{pacCedula}")
+    @RolesAllowed({"paciente"})
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Cita> obtenerCitas(@PathParam("pacCedula") Integer cedula) {
-        //para listar todas las citas
-        return citaServicios.listarCitasPorPaciente(cedula);
+    public Response obtenerCitas(@PathParam("pacCedula") Integer pacCedula, @Context SecurityContext ctx) {
+        Integer cedulaToken = TokenUtils.obtenerCedulaDesdeToken(ctx);
+
+        if (cedulaToken == null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("No se pudo obtener la cédula del token")
+                    .build();
+        }
+
+        // Si el usuario autenticado solo puede ver sus propias citas:
+        if (!cedulaToken.equals(pacCedula)) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("No tiene permisos para ver las citas de otro paciente")
+                    .build();
+        }
+
+        List<Cita> citas = citaServicios.listarCitasPorPaciente(pacCedula);
+        return Response.ok(citas).build();
     }
 }
