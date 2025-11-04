@@ -65,7 +65,4 @@ public class CitaServicios {
     public List<Cita> listarCitasPorPaciente(Integer pacCedula) {
         return citaRepositorio.list("paciente.pacCedula", pacCedula);
     }
-    public List<Cita> listarCitas() {
-        return citaRepositorio.listAll();
-    }
 }

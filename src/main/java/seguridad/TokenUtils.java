@@ -58,4 +58,34 @@ public class TokenUtils {
                 .entity("El token no contiene la cédula del paciente")
                 .build();
     }
+
+    public static String obtenerNombreDesdeToken(@Context SecurityContext ctx) {
+        try {
+            JWTCallerPrincipal jwt = (JWTCallerPrincipal) ctx.getUserPrincipal();
+            Object nombreClaim = jwt.getClaim("nombre");
+
+            if (nombreClaim == null) {
+                return null;
+            }
+
+            if (nombreClaim instanceof String string) {
+                return string;
+            } else {
+                return (String.valueOf(nombreClaim));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Devuelve una respuesta HTTP de error si el token no contiene la cédula.
+     */
+    public static Response respuestaNombreNoEncontrada() {
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity("El token no contiene el nombre del paciente")
+                .build();
+    }
 }
