@@ -18,6 +18,7 @@ public class RecordatorioServicio {
 
     RecordatorioRepositorio recordatorioRepositorio;
     TipoServicioRepositorio tipoServicioRepositorio;
+    NotificacionServicios notificacionServicios;
     private static final String QUERY = "tipoServicio.tipId = ?1 AND paciente.pacCedula = ?2";
 
     @Transactional
@@ -50,10 +51,21 @@ public class RecordatorioServicio {
         Recordatorio existente = Recordatorio.find(QUERY, dto.tipoServicio, cedulaPaciente).firstResult();
 
         if (existente != null) {
+            // Guarda la anticipación anterior antes de actualizar
+            long anticipacionAnterior = existente.getRecAnticipacion();
             //Si ya existe → actualizar
             existente.setRecAnticipacion(dto.recAnticipacion);
             existente.setRecUnidadTiempo(dto.recUnidadTiempo);
             Recordatorio.getEntityManager().merge(existente);
+
+            // Después de actualizar el recordatorio, recalculamos las notificaciones
+            RecordatorioDTO dtoActualizado = new RecordatorioDTO();
+            dtoActualizado.recId = existente.getRecId();
+            dtoActualizado.recAnticipacion = dto.recAnticipacion;
+            dtoActualizado.tipoServicio = dto.tipoServicio;
+
+            notificacionServicios.actualizarNotificacionesPorCambioDeRecordatorio(dtoActualizado, anticipacionAnterior);
+
             return existente;
         } else {
             //Si no existe → crear uno nuevo

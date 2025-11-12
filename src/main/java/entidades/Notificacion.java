@@ -25,7 +25,13 @@ public class Notificacion extends PanacheEntityBase {
     @Column(name = "notEstado", nullable = false)
     private Boolean notEstado;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "recId", nullable = false)
     private Recordatorio recordatorio;
+
+    @Column(name = "idReferencia")
+    private Integer idReferencia;
+
+    @Column(name = "tipoReferencia")
+    private String tipoReferencia;
 }

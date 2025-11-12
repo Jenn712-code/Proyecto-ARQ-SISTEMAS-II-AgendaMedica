@@ -18,6 +18,6 @@ public class TipoServicio extends PanacheEntityBase {
     @Column(name = "tipId", length = 10, nullable = false, unique = true)
     private Integer tipId;
 
-    @Column(name = "tipnombre", length = 200, nullable = false)
-    private String tipnombre;
+    @Column(name = "tipNombre", length = 200, nullable = false)
+    private String tipNombre;
 }
