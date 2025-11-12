@@ -12,7 +12,9 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lombok.AllArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Path("/citas")
 @AllArgsConstructor
@@ -66,10 +68,10 @@ public class CitaRecursos {
     }
 
     @GET
-    @Path("/listarCitas/{pacCedula}")
+    @Path("/listarCitas")
     @RolesAllowed({"paciente"})
     @Produces(MediaType.APPLICATION_JSON)
-    public Response obtenerCitas(@PathParam("pacCedula") Integer pacCedula, @Context SecurityContext ctx) {
+    public Response obtenerCitas(@Context SecurityContext ctx) {
         Integer cedulaToken = TokenUtils.obtenerCedulaDesdeToken(ctx);
 
         if (cedulaToken == null) {
@@ -78,14 +80,11 @@ public class CitaRecursos {
                     .build();
         }
 
-        // Si el usuario autenticado solo puede ver sus propias citas:
-        if (!cedulaToken.equals(pacCedula)) {
-            return Response.status(Response.Status.FORBIDDEN)
-                    .entity("No tiene permisos para ver las citas de otro paciente")
-                    .build();
-        }
+        Map<String, List<CitaDTO>> citasCategorizadas = new HashMap<>();
+        citasCategorizadas.put("pendientes", citaServicios.listarCitasPorEstado(cedulaToken, "Pendiente"));
+        citasCategorizadas.put("asistidas", citaServicios.listarCitasPorEstado(cedulaToken, "Asistida"));
+        citasCategorizadas.put("noAsistidas", citaServicios.listarCitasPorEstado(cedulaToken, "No asistida"));
 
-        List<Cita> citas = citaServicios.listarCitasPorPaciente(pacCedula);
-        return Response.ok(citas).build();
+        return Response.ok(citasCategorizadas).build();
     }
 }

@@ -17,6 +17,7 @@ import java.util.List;
 public class MedicamentoServicio {
 
     MedicamentoRepositorio medicamentoRepositorio;
+    NotificacionServicios notificacionServicios;
 
     @Transactional
     public Medicamento crearMedicamento(MedicamentoDTO dto){
@@ -32,7 +33,7 @@ public class MedicamentoServicio {
         medicamento.setMedDosis(dto.medDosis);
         medicamento.setMedFrecuencia(dto.medFrecuencia);
         medicamento.setMedDuracion(dto.medDuracion);
-        TipoServicio tipo = TipoServicio.find("tipnombre", "Medicamento").firstResult();
+        TipoServicio tipo = TipoServicio.find("tipNombre", "Medicamento").firstResult();
         medicamento.setTipoServicio(tipo);
         medicamento.setMedFecha(dto.medFecha);
         if (dto.medEstado == null || dto.medEstado.isBlank()) {
@@ -44,8 +45,13 @@ public class MedicamentoServicio {
         medicamento.setPaciente(paciente);
 
         medicamentoRepositorio.persist(medicamento);
-        return medicamento;
+        medicamentoRepositorio.flush();
 
+        // asignar el ID generado al DTO antes de llamar a notificacionServicios
+        dto.medId = medicamento.getMedId();
+        notificacionServicios.generarNotificacionesParaMedicamento(dto);
+
+        return medicamento;
     }
 
     public List<Medicamento> listarMedicamentosPorPaciente(Integer pacCedula) {

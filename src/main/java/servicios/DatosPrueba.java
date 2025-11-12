@@ -66,7 +66,7 @@ public class DatosPrueba {
             cita.setCitHora(LocalTime.of(14, 30, 0));      // HH:mm:ss
             cita.setCitDireccion("Calle 123 #45-67");
             cita.setCitEstado("Pendiente");
-            cita.setCitRecordatorio(true);
+            cita.setCitRecordatorio(false);
             cita.setPaciente(paciente1);
             Especialidad esp = Especialidad.findById(1);
             cita.setEspecialidad(esp);
@@ -85,7 +85,7 @@ public class DatosPrueba {
             medicamento.setMedFrecuencia(8);
             medicamento.setMedDuracion(5);
             medicamento.setMedEstado("Pendiente");
-            medicamento.setMedRecordatorio(true);
+            medicamento.setMedRecordatorio(false);
             medicamento.setMedFecha(LocalDateTime.now()); // fecha-hora actual
             medicamento.setPaciente(paciente1);
             TipoServicio tipo = TipoServicio.findById(2);
@@ -109,10 +109,10 @@ public class DatosPrueba {
     }
 
     private void insertarSiNoExiste(String nombre) {
-        long count = TipoServicio.count("tipnombre", nombre);
+        long count = TipoServicio.count("tipNombre", nombre);
         if (count == 0) {
             TipoServicio tipoServicio = new TipoServicio();
-            tipoServicio.setTipnombre(nombre);
+            tipoServicio.setTipNombre(nombre);
             tipoServicio.persist();
             LOG.info(">>> TipoServicio '{}' insertado");
         }
