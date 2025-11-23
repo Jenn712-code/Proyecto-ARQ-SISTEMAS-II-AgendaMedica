@@ -24,58 +24,48 @@ public class RecordatorioServicio {
     @Transactional
     public Recordatorio configurarRecordatorio(RecordatorioDTO dto, Integer cedulaPaciente) {
 
-        //Verificar que el tipo de servicio exista
+        // Verificar que el tipo de servicio exista
         TipoServicio tipoServicio = tipoServicioRepositorio.findById(dto.tipoServicio);
         if (tipoServicio == null) {
             throw new IllegalArgumentException("El tipo de servicio con ID " + dto.tipoServicio + " no existe");
         }
 
-        //Verificar si el tipo de servicio pertenece a una cita o medicamento del paciente
-        boolean perteneceAPaciente = false;
-
-        // Buscar cita
-        Cita cita = Cita.find(QUERY, dto.tipoServicio, cedulaPaciente).firstResult();
-
-        // Buscar medicamento
-        Medicamento medicamento = Medicamento.find(QUERY, dto.tipoServicio, cedulaPaciente).firstResult();
-
-        if (cita != null || medicamento != null) {
-            perteneceAPaciente = true;
+        Paciente paciente = Paciente.findById(cedulaPaciente);
+        if (paciente == null) {
+            throw new IllegalArgumentException("El paciente con cédula " + cedulaPaciente + " no existe");
         }
 
-        if (!perteneceAPaciente) {
-            throw new IllegalArgumentException("No hay registros con el tipo de servicio asociado");
-        }
-
-        // Buscar si ya existe un recordatorio global para este paciente y tipo de servicio
+        // Buscar si ya existe un recordatorio para este paciente y tipo de servicio
         Recordatorio existente = Recordatorio.find(QUERY, dto.tipoServicio, cedulaPaciente).firstResult();
 
         if (existente != null) {
-            // Guarda la anticipación anterior antes de actualizar
+            // Actualizar recordatorio existente
             long anticipacionAnterior = existente.getRecAnticipacion();
-            //Si ya existe → actualizar
             existente.setRecAnticipacion(dto.recAnticipacion);
             existente.setRecUnidadTiempo(dto.recUnidadTiempo);
             Recordatorio.getEntityManager().merge(existente);
 
-            // Después de actualizar el recordatorio, recalculamos las notificaciones
-            RecordatorioDTO dtoActualizado = new RecordatorioDTO();
-            dtoActualizado.recId = existente.getRecId();
-            dtoActualizado.recAnticipacion = dto.recAnticipacion;
-            dtoActualizado.tipoServicio = dto.tipoServicio;
-
-            notificacionServicios.actualizarNotificacionesPorCambioDeRecordatorio(dtoActualizado, anticipacionAnterior);
+            // Actualizar notificaciones solo si hay registros de Cita o Medicamento
+            Cita cita = Cita.find(QUERY, dto.tipoServicio, cedulaPaciente).firstResult();
+            Medicamento medicamento = Medicamento.find(QUERY, dto.tipoServicio, cedulaPaciente).firstResult();
+            if (cita != null || medicamento != null) {
+                RecordatorioDTO dtoActualizado = new RecordatorioDTO();
+                dtoActualizado.recId = existente.getRecId();
+                dtoActualizado.recAnticipacion = dto.recAnticipacion;
+                dtoActualizado.tipoServicio = dto.tipoServicio;
+                notificacionServicios.actualizarNotificacionesPorCambioDeRecordatorio(dtoActualizado, anticipacionAnterior);
+            }
 
             return existente;
         } else {
-            //Si no existe → crear uno nuevo
-            Paciente paciente = Paciente.findById(cedulaPaciente);
+            // Crear nuevo recordatorio global aunque no haya Cita o Medicamento aún
             Recordatorio nuevo = new Recordatorio();
             nuevo.setPaciente(paciente);
             nuevo.setTipoServicio(tipoServicio);
             nuevo.setRecAnticipacion(dto.recAnticipacion);
             nuevo.setRecUnidadTiempo(dto.recUnidadTiempo);
             nuevo.persist();
+
             return nuevo;
         }
     }
@@ -83,28 +73,18 @@ public class RecordatorioServicio {
     @Transactional
     public Map<String, Object> obtenerRecordatorio(Long tipoServicioId, String cedulaPaciente) throws Exception {
         try {
-            Cita cita = Cita.find(QUERY, tipoServicioId, cedulaPaciente).firstResult();
-            Medicamento medicamento = Medicamento.find(QUERY, tipoServicioId, cedulaPaciente).firstResult();
-
-            if (cita == null && medicamento == null) {
-                throw new IllegalArgumentException("El tipo de servicio no pertenece al paciente con cédula " + cedulaPaciente);
-            }
-
-            // Buscar el recordatorio asociado a ese tipo de servicio y paciente
+            // Obtenemos directamente el recordatorio
             Recordatorio recordatorio = Recordatorio.find(QUERY, tipoServicioId, cedulaPaciente).firstResult();
 
             if (recordatorio == null) {
-                // No hay recordatorio configurado para este paciente
+                // Sin recordatorio → entregar vacío (Frontend interpreta como No Configurado)
                 return Collections.emptyMap();
             }
 
-            // Convertir la anticipación total a días, horas y minutos
+            // Convertir anticipación total a días, horas y minutos
             return getStringObjectMap(tipoServicioId, recordatorio);
 
-        } catch (IllegalArgumentException e) {
-            throw e;
         } catch (Exception e) {
-            // Errores inesperados
             throw new Exception("Error al obtener recordatorio: " + e.getMessage(), e);
         }
     }
