@@ -9,6 +9,9 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import repositorios.MedicamentoRepositorio;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
@@ -54,8 +57,29 @@ public class MedicamentoServicio {
         return medicamento;
     }
 
-    public List<Medicamento> listarMedicamentosPorPaciente(Integer pacCedula) {
-        return medicamentoRepositorio.list("paciente.pacCedula", pacCedula);
+    public List<MedicamentoDTO> listarMedicamentosPorEstado(Integer pacCedula, String estado) {
+        List<Object[]> results = medicamentoRepositorio.listarMedicamentos(pacCedula, estado);
+        List<MedicamentoDTO> medicamentos = new ArrayList<>();
+
+        for (Object[] row : results) {
+            MedicamentoDTO dto = new MedicamentoDTO();
+            dto.medId = (Integer) row[0];
+            dto.medNombre = (String) row[1];
+            dto.medDosis = (String) row[2];
+            dto.medFrecuencia = (Integer) row[3];
+            if (row[4] instanceof Timestamp ts) {
+                dto.medFecha = ts.toLocalDateTime();
+            } else if (row[4] instanceof LocalDateTime ldt) {
+                dto.medFecha = ldt;
+            } else {
+                dto.medFecha = null;
+            }
+            dto.medDuracion = (Integer) row[5];
+            dto.pacCedula = (Integer) row[6];
+            dto.medEstado = (String) row[7];
+            medicamentos.add(dto);
+        }
+        return medicamentos;
     }
 }
 

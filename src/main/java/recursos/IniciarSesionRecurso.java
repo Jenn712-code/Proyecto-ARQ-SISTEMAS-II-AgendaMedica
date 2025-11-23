@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import static io.quarkus.arc.impl.UncaughtExceptions.LOGGER;
+import static seguridad.TokenUtils.generateRecoveryToken;
 
 @Path("/IniciarSesion")
 @AllArgsConstructor
@@ -101,12 +102,7 @@ public class IniciarSesionRecurso {
                     .entity(Map.of(MENSAJE, "El correo ingresado no se encuentra registrado")).build();
         }
 
-        // Generar token temporal JWT (expira en 10 minutos)
-        String tokenRecuperacion = Jwt.issuer("miapp-issuer")
-                .subject(correo)
-                .expiresIn(Duration.ofMinutes(5))
-                .claim("tipo", "recuperacion")
-                .sign();
+        TokenUtils.RecoveryTokenData data = generateRecoveryToken(correo);
 
         // Enviar correo con solo el token
         mailer.send(Mail.withText(
@@ -114,11 +110,14 @@ public class IniciarSesionRecurso {
                 "Recuperación de contraseña",
                 "Hola " + paciente.getPacNombre() + ",\n\n" +
                         "Haz solicitado recuperar tu contraseña.\n" +
-                        "Tu token de recuperación es:\n\n" + tokenRecuperacion + "\n\n" +
+                        "Tu código de recuperación es:\n\n" +  data.codigo + "\n\n" +
                         "Este token es válido por 5 minutos.\n" +
-                        "Ingresa este token en la aplicación para restablecer tu contraseña."
+                        "Ingresa este códogo en la app MedPlanner para restablecer tu contraseña."
         ));
-        return Response.ok(Map.of(MENSAJE, "Se ha enviado un token de recuperación a su correo electrónico registrado")).build();
+        return Response.ok(Map.of(
+                MENSAJE, "Código enviado a tu correo",
+                "token", data.token   // <-- ESTE ES EL JWT QUE FLUTTER NECESITA
+        )).build();
     }
 
     @POST
@@ -129,14 +128,16 @@ public class IniciarSesionRecurso {
         if (body == null ||
                 !body.containsKey(PAC_CORREO) ||
                 !body.containsKey(TOKEN) ||
+                !body.containsKey("codigo") ||
                 !body.containsKey(NUEVA_CONTRASENA )) {
 
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of(MENSAJE, "Correo, token y nueva contraseña requeridos")).build();
+                    .entity(Map.of(MENSAJE, "Correo, token, código y nueva contraseña requeridos")).build();
         }
 
         String correo = body.get(PAC_CORREO);
         String token = body.get(TOKEN);
+        String codigoIngresado = body.get("codigo");
         String nuevaContrasena = body.get(NUEVA_CONTRASENA );
 
         try {
@@ -163,6 +164,13 @@ public class IniciarSesionRecurso {
                         .entity(Map.of(MENSAJE, "El token ingresado es inválido")).build();
             }
 
+            // Validar código
+            String codigoReal = jwt.getClaim("codigo").toString();
+            if (!codigoIngresado.equals(codigoReal)) {
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity(Map.of(MENSAJE, "Código incorrecto")).build();
+            }
+
             // Buscar paciente
             Paciente paciente = Paciente.find(PAC_CORREO, correo).firstResult();
             if (paciente == null) {
@@ -171,7 +179,7 @@ public class IniciarSesionRecurso {
             }
 
             if (nuevaContrasena == null || nuevaContrasena.isEmpty()) {
-                return Response.ok(Map.of(MENSAJE, "Token validado correctamente. Ahora puede restablecer su contraseña")).build();
+                return Response.ok(Map.of(MENSAJE, "Código validado correctamente. Ahora puede restablecer su contraseña")).build();
             }
 
             // Actualizar contraseña
@@ -182,9 +190,9 @@ public class IniciarSesionRecurso {
 
         } catch (ParseException e) {
             return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(Map.of(MENSAJE, "El token ingresado es inválido, intente de nuevo")).build();
+                    .entity(Map.of(MENSAJE, "El código ingresado es inválido, intente de nuevo")).build();
         } catch (Exception e) {
-            LOGGER.error("Error al validar el token", e);
+            LOGGER.error("Error al validar el código", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(Map.of(MENSAJE, "Error interno al procesar la solicitud")).build();
         }

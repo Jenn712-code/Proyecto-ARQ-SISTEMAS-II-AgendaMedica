@@ -1,5 +1,6 @@
 package recursos;
 
+import dto.CitaDTO;
 import dto.MedicamentoDTO;
 import entidades.Medicamento;
 import io.smallrye.jwt.auth.principal.JWTCallerPrincipal;
@@ -12,7 +13,10 @@ import jakarta.ws.rs.core.SecurityContext;
 import lombok.AllArgsConstructor;
 import seguridad.TokenUtils;
 import servicios.MedicamentoServicio;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Path("/medicamentos")
 @AllArgsConstructor
@@ -66,23 +70,20 @@ public class MedicamentoRecurso {
     @Path("/listarMedicamentos")
     @RolesAllowed({"paciente"})
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listarMedicamentos(@Context SecurityContext ctx) {
-        try {
-            //Obtener la cédula del token
-            JWTCallerPrincipal jwt = (JWTCallerPrincipal) ctx.getUserPrincipal();
-            String cedulaStr = jwt.getClaim("cedula");
-            Integer cedula = Integer.parseInt(cedulaStr);
+    public Response obtenerCitas(@Context SecurityContext ctx) {
+        Integer cedulaToken = TokenUtils.obtenerCedulaDesdeToken(ctx);
 
-            //Buscar medicamentos del paciente autenticado
-            List<Medicamento> medicamentos = medicamentoServicio.listarMedicamentosPorPaciente(cedula);
-
-            return Response.ok(medicamentos).build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error al listar medicamentos: " + e.getMessage())
+        if (cedulaToken == null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("No se pudo obtener la cédula del token")
                     .build();
         }
+
+        Map<String, List<MedicamentoDTO>> medicamentosCategorizados = new HashMap<>();
+        medicamentosCategorizados.put("pendientes", medicamentoServicio.listarMedicamentosPorEstado(cedulaToken, "Pendiente"));
+        medicamentosCategorizados.put("consumidos", medicamentoServicio.listarMedicamentosPorEstado(cedulaToken, "Consumido"));
+        medicamentosCategorizados.put("noConsumidos", medicamentoServicio.listarMedicamentosPorEstado(cedulaToken, "No consumido"));
+
+        return Response.ok(medicamentosCategorizados).build();
     }
 }
