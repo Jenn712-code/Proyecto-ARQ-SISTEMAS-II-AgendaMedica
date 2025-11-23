@@ -53,6 +53,46 @@ public class DatosPrueba {
 
         // Especialidades
         insertarEspecialidadSiNoExiste("Medicina general");
+        insertarEspecialidadSiNoExiste("Pediatría");
+        insertarEspecialidadSiNoExiste("Odontología");
+        insertarEspecialidadSiNoExiste("Ginecología y obstetricia");
+        insertarEspecialidadSiNoExiste("Cardiología");
+        insertarEspecialidadSiNoExiste("Terapia física");
+        insertarEspecialidadSiNoExiste("Dermatología");
+        insertarEspecialidadSiNoExiste("Endocrinología");
+        insertarEspecialidadSiNoExiste("Gastroenterología");
+        insertarEspecialidadSiNoExiste("Neumología");
+        insertarEspecialidadSiNoExiste("Nefrología");
+        insertarEspecialidadSiNoExiste("Neurología");
+        insertarEspecialidadSiNoExiste("Oncología");
+        insertarEspecialidadSiNoExiste("Oftalmología");
+        insertarEspecialidadSiNoExiste("Otorrinolaringología");
+        insertarEspecialidadSiNoExiste("Psiquiatría");
+        insertarEspecialidadSiNoExiste("Reumatología");
+        insertarEspecialidadSiNoExiste("Traumatología y ortopedia");
+        insertarEspecialidadSiNoExiste("Urología");
+        insertarEspecialidadSiNoExiste("Medicina interna");
+        insertarEspecialidadSiNoExiste("Cirugía general");
+        insertarEspecialidadSiNoExiste("Cirugía plástica");
+        insertarEspecialidadSiNoExiste("Cirugía cardiovascular");
+        insertarEspecialidadSiNoExiste("Cirugía pediátrica");
+        insertarEspecialidadSiNoExiste("Medicina familiar");
+        insertarEspecialidadSiNoExiste("Medicina del trabajo");
+        insertarEspecialidadSiNoExiste("Medicina deportiva");
+        insertarEspecialidadSiNoExiste("Anestesiología");
+        insertarEspecialidadSiNoExiste("Radiología");
+        insertarEspecialidadSiNoExiste("Hematología");
+        insertarEspecialidadSiNoExiste("Infectología");
+        insertarEspecialidadSiNoExiste("Geriatría");
+        insertarEspecialidadSiNoExiste("Nutriología clínica");
+        insertarEspecialidadSiNoExiste("Urgencias médicas");
+        insertarEspecialidadSiNoExiste("Patología clínica");
+        insertarEspecialidadSiNoExiste("Rehabilitación física");
+        insertarEspecialidadSiNoExiste("Terapia intensiva");
+        insertarEspecialidadSiNoExiste("Psicología clínica");
+        insertarEspecialidadSiNoExiste("Neurocirugía");
+        insertarEspecialidadSiNoExiste("Cirugía maxilofacial");
+        insertarEspecialidadSiNoExiste("Medicina estética");
 
         // Tipos de servicio
         insertarSiNoExiste("Cita");

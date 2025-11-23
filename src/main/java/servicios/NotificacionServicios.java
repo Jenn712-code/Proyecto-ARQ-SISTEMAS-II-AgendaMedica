@@ -165,10 +165,7 @@ public class NotificacionServicios {
                 }
             }
 
-            // Solo notificaciones pendientes
-            if (!dto.notEstado) {
-                notificaciones.add(dto);
-            }
+            notificaciones.add(dto);
         }
         return notificaciones;
     }

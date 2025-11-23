@@ -5,6 +5,7 @@ import jakarta.ws.rs.core.Response;
 import io.smallrye.jwt.auth.principal.JWTCallerPrincipal;
 import jakarta.ws.rs.core.SecurityContext;
 import java.time.Duration;
+import java.util.Random;
 import java.util.Set;
 
 public class TokenUtils {
@@ -87,5 +88,31 @@ public class TokenUtils {
         return Response.status(Response.Status.BAD_REQUEST)
                 .entity("El token no contiene el nombre del paciente")
                 .build();
+    }
+
+    public static class RecoveryTokenData {
+        public final String token;
+        public final String codigo;
+
+        public RecoveryTokenData(String token, String codigo) {
+            this.token = token;
+            this.codigo = codigo;
+        }
+    }
+
+    public static RecoveryTokenData generateRecoveryToken(String correo) {
+
+        // generar código corto (6 dígitos)
+        String codigo = String.format("%06d", new Random().nextInt(999999));
+
+        // generar token JWT con el código adentro
+        String token = Jwt.issuer("miapp-issuer")
+                .subject(correo)
+                .expiresIn(Duration.ofMinutes(5))  // recuperación = corto
+                .claim("tipo", "recuperacion")
+                .claim("codigo", codigo)           // <--- código embebido
+                .sign();
+
+        return new RecoveryTokenData(token, codigo);
     }
 }

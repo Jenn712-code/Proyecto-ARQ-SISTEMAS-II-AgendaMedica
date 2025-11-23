@@ -22,7 +22,7 @@ public class NotificacionRepositorio implements PanacheRepository<Notificacion> 
 
     public List<Object[]> obtenerNotificacionesPorCedula(Integer cedula) {
         String sql = """
-        SELECT\s
+        SELECT
                 n.notid,
                 n.notfecha,
                 n.notestado,
@@ -37,16 +37,15 @@ public class NotificacionRepositorio implements PanacheRepository<Notificacion> 
                 m.meddosis,
                 m.medfrecuencia,
                 m.medfecha
-            FROM notificaciones n
-            JOIN recordatorios r ON n.recid = r.recid
-            JOIN pacientes p ON r.paccedula = p.paccedula
-            JOIN tiposervicio ts ON n.tiporeferencia = ts.tipnombre
-            LEFT JOIN citas c ON n.idreferencia = c.citid AND ts.tipnombre = 'Cita'
-            LEFT JOIN especialidades e ON c.espid = e.espid
-            LEFT JOIN medicamentos m ON n.idreferencia = m.medid AND ts.tipnombre = 'Medicamento'
-            WHERE p.paccedula = :pacCedula
-            AND n.notestado = false
-            ORDER BY n.notfecha DESC
+        FROM notificaciones n
+        JOIN recordatorios r ON n.recid = r.recid
+        JOIN pacientes p ON r.paccedula = p.paccedula
+        JOIN tiposervicio ts ON n.tiporeferencia = ts.tipnombre
+        LEFT JOIN citas c ON n.idreferencia = c.citid AND ts.tipnombre = 'Cita'
+        LEFT JOIN especialidades e ON c.espid = e.espid
+        LEFT JOIN medicamentos m ON n.idreferencia = m.medid AND ts.tipnombre = 'Medicamento'
+        WHERE p.paccedula = :pacCedula
+        ORDER BY n.notfecha DESC
     """;
 
         @SuppressWarnings("unchecked")
