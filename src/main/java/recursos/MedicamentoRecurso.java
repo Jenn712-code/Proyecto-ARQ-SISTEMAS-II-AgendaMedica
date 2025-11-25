@@ -86,4 +86,74 @@ public class MedicamentoRecurso {
 
         return Response.ok(medicamentosCategorizados).build();
     }
+
+    @PUT
+    @Path("/actualizar")
+    @RolesAllowed({"paciente"})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response actualizarMedicamento(MedicamentoDTO dto, @Context SecurityContext ctx) {
+
+        Integer cedulaToken = TokenUtils.obtenerCedulaDesdeToken(ctx);
+        if (cedulaToken == null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("No se pudo obtener la cédula del token")
+                    .build();
+        }
+
+        if (!cedulaToken.equals(dto.pacCedula)) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("No tiene permiso para modificar este medicamento")
+                    .build();
+        }
+
+        Medicamento medActualizado = medicamentoServicio.actualizarMedicamento(dto);
+
+        switch (medActualizado.getMedId()) {
+            case -2:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Paciente no encontrado").build();
+            case -4:
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("El medicamento no existe").build();
+        }
+
+        return Response.ok(medActualizado).build();
+    }
+
+    @DELETE
+    @Path("/eliminar/{medId}")
+    @RolesAllowed({"paciente"})
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response eliminarMedicamento(@PathParam("medId") Integer medId,
+                                        @Context SecurityContext ctx) {
+
+        Integer cedulaToken = TokenUtils.obtenerCedulaDesdeToken(ctx);
+        if (cedulaToken == null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("No se pudo obtener la cédula del token")
+                    .build();
+        }
+
+        Medicamento med = Medicamento.findById(medId);
+        if (med == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("El medicamento no existe").build();
+        }
+
+        if (!med.getPaciente().getPacCedula().equals(cedulaToken)) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("No tiene permiso para eliminar este medicamento")
+                    .build();
+        }
+
+        Medicamento eliminado = medicamentoServicio.eliminarMedicamento(medId);
+
+        if (eliminado.getMedId() == -4) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("El medicamento no existe").build();
+        }
+
+        return Response.ok("Medicamento eliminado correctamente").build();
+    }
 }

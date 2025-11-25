@@ -98,12 +98,96 @@ public class CitaServicios {
 
             dto.citDireccion = (String) row[4];
             dto.citEstado = (String) row[5];
-            dto.pacCedula = (Integer) row[6];
-            dto.espId = (Integer) row[7];
-            dto.espNombre = (String) row[8];
+            dto.citRecordatorio = (Boolean) row[6];
+            dto.pacCedula = (Integer) row[7];
+            dto.espId = (Integer) row[8];
+            dto.espNombre = (String) row[9];
 
             citas.add(dto);
         }
         return citas;
+    }
+
+    @Transactional
+    public Cita actualizarCita(CitaDTO dto) {
+
+        Cita cita = Cita.findById(dto.citId);
+        if (cita == null) {
+            Cita dummy = new Cita();
+            dummy.setCitId(-4); // No existe la cita
+            return dummy;
+        }
+
+        // Validar paciente
+        Paciente paciente = Paciente.findById(dto.pacCedula);
+        if (paciente == null) {
+            Cita dummy = new Cita();
+            dummy.setCitId(-2); // Paciente no existe
+            return dummy;
+        }
+
+        // Validar especialidad
+        Especialidad especialidad = Especialidad.findById(dto.espId);
+        if (especialidad == null) {
+            Cita dummy = new Cita();
+            dummy.setCitId(-3); // Especialidad no existe
+            return dummy;
+        }
+
+        // Validar si existe otra cita en esa fecha/hora
+        Cita citaExistente = citaRepositorio.find(
+                "citFecha = ?1 and citHora = ?2 and citId <> ?3",
+                dto.citFecha, dto.citHora, dto.citId
+        ).firstResult();
+
+        if (citaExistente != null) {
+            Cita dummy = new Cita();
+            dummy.setCitId(-1); // Duplicada
+            return dummy;
+        }
+
+        // === Actualizar campos ===
+        cita.setCitNomMedico(dto.citNomMedico);
+        cita.setCitFecha(dto.citFecha);
+        cita.setCitHora(dto.citHora);
+        cita.setCitDireccion(dto.citDireccion);
+
+        if (dto.citEstado == null || dto.citEstado.isBlank()) {
+            cita.setCitEstado("Pendiente");
+        } else {
+            cita.setCitEstado(dto.citEstado);
+        }
+
+        cita.setCitRecordatorio(dto.citRecordatorio);
+        cita.setPaciente(paciente);
+        cita.setEspecialidad(especialidad);
+
+        TipoServicio tipo = TipoServicio.find("tipNombre", "Cita").firstResult();
+        cita.setTipoServicio(tipo);
+
+        citaRepositorio.persist(cita);
+        citaRepositorio.flush();
+
+        // Notificación
+        notificacionServicios.generarNotificacionParaCita(dto);
+
+        return cita;
+    }
+
+    @Transactional
+    public Cita eliminarCita(Integer citId) {
+
+        Cita cita = Cita.findById(citId);
+
+        if (cita == null) {
+            Cita dummy = new Cita();
+            dummy.setCitId(-4); // No existe cita
+            return dummy;
+        }
+
+        citaRepositorio.delete(cita);
+        citaRepositorio.flush();
+
+        return cita;
     }
 }

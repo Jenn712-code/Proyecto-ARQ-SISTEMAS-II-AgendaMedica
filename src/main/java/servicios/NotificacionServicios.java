@@ -11,13 +11,12 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import repositorios.NotificacionRepositorio;
 import repositorios.RecordatorioRepositorio;
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.jboss.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 @AllArgsConstructor
@@ -62,23 +61,22 @@ public class NotificacionServicios {
         Recordatorio recordatorio = recordatorioRepositorio.findByPacienteYTipo(medicamento.pacCedula, "Medicamento");
         if (recordatorio == null) return;
 
-        int dias = medicamento.medDuracion;
-        int frecuenciaHoras = medicamento.medFrecuencia; // Ejemplo: cada 12 horas
         LocalDateTime fechaInicio = medicamento.medFecha;
+        if (fechaInicio == null) {
+            logger.log(Level.WARNING, "No se puede generar notificaciones: medFecha es null para medicamento id=" + medicamento.medId);
+            return;
+        }
+
+        int dias = medicamento.medDuracion;
+        int frecuenciaHoras = medicamento.medFrecuencia;
 
         List<Notificacion> notificaciones = new ArrayList<>();
 
-        // Recorremos cada día del tratamiento
         for (int d = 0; d < dias; d++) {
-            // Por cada día, generamos las notificaciones según la frecuencia
             for (int h = 0; h < 24; h += frecuenciaHoras) {
-                // Calcular la hora de cada dosis dentro del día
                 LocalDateTime fechaDosis = fechaInicio.plusDays(d).plusHours(h);
-
-                // Calcular la hora de notificación (restando la anticipación)
                 LocalDateTime fechaNotificacion = fechaDosis.minusMinutes(recordatorio.getRecAnticipacion());
 
-                // Crear el objeto Notificacion
                 Notificacion n = new Notificacion();
                 n.setNotFecha(fechaNotificacion);
                 n.setNotEstado(false);
@@ -89,7 +87,7 @@ public class NotificacionServicios {
                 notificaciones.add(n);
             }
         }
-        // Guardar todas las notificaciones
+
         notificaciones.forEach(notificacionRepositorio::persist);
     }
 

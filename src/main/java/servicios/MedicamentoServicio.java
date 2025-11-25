@@ -77,9 +77,63 @@ public class MedicamentoServicio {
             dto.medDuracion = (Integer) row[5];
             dto.pacCedula = (Integer) row[6];
             dto.medEstado = (String) row[7];
+            dto.medRecordatorio = (Boolean) row[8];
             medicamentos.add(dto);
         }
         return medicamentos;
+    }
+
+    @Transactional
+    public Medicamento actualizarMedicamento(MedicamentoDTO dto) {
+
+        Medicamento med = Medicamento.findById(dto.medId);
+        if (med == null) {
+            Medicamento dummy = new Medicamento();
+            dummy.setMedId(-4); // No existe el medicamento
+            return dummy;
+        }
+
+        // Validar paciente
+        Paciente paciente = Paciente.findById(dto.pacCedula);
+        if (paciente == null) {
+            Medicamento dummy = new Medicamento();
+            dummy.setMedId(-2); // Paciente no existe
+            return dummy;
+        }
+
+        // === Actualizar campos ===
+        med.setMedNombre(dto.medNombre);
+        med.setMedFrecuencia(dto.medFrecuencia);
+        med.setMedDosis(dto.medDosis);
+        med.setMedDuracion(dto.medDuracion);
+        med.setMedEstado(dto.medEstado != null && !dto.medEstado.isBlank() ? dto.medEstado : "Pendiente");
+        med.setMedRecordatorio(dto.medRecordatorio != null ? dto.medRecordatorio : false);
+        med.setMedFecha(dto.medFecha);
+        med.setPaciente(paciente);
+
+        med.persist();
+        med.flush();
+
+        // Notificaciones
+        notificacionServicios.generarNotificacionesParaMedicamento(dto);
+
+        return med;
+    }
+
+    @Transactional
+    public Medicamento eliminarMedicamento(Integer medId) {
+        Medicamento med = Medicamento.findById(medId);
+
+        if (med == null) {
+            Medicamento dummy = new Medicamento();
+            dummy.setMedId(-4); // No existe medicamento
+            return dummy;
+        }
+
+        med.delete();
+        med.flush();
+
+        return med;
     }
 }
 

@@ -12,7 +12,7 @@ public class MedicamentoRepositorio implements PanacheRepository<Medicamento> {
     public List<Object[]> listarMedicamentos(Integer pacCedula, String estado) {
         return getEntityManager().createQuery(
                         "SELECT m.medId, m.medNombre, m.medDosis, m.medFrecuencia, m.medFecha, " +
-                                "m.medDuracion, m.paciente.pacCedula, m.medEstado " +
+                                "m.medDuracion, m.paciente.pacCedula, m.medEstado, medRecordatorio " +
                                 "FROM Medicamento m " +
                                 "WHERE m.paciente.pacCedula = :pacCedula AND m.medEstado = :estado", Object[].class)
                 .setParameter("pacCedula", pacCedula)
